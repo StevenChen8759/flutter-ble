@@ -21,7 +21,7 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   final FlutterBlue flutterBlue = FlutterBlue.instance;
-  final List<BluetoothDevice> devicesList = new List<BluetoothDevice>();
+  final List<ScanResult> devicesList = new List<ScanResult>();
   final Map<Guid, List<int>> readValues = new Map<Guid, List<int>>();
 
   @override
@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   BluetoothDevice _connectedDevice;
   List<BluetoothService> _services;
 
-  _addDeviceTolist(final BluetoothDevice device) {
+  _addDeviceTolist(final ScanResult device) {
     if (!widget.devicesList.contains(device)) {
       setState(() {
         widget.devicesList.add(device);
@@ -44,38 +44,48 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    widget.flutterBlue.connectedDevices
+    /*widget.flutterBlue.connectedDevices
         .asStream()
         .listen((List<BluetoothDevice> devices) {
       for (BluetoothDevice device in devices) {
         _addDeviceTolist(device);
       }
-    });
+    });*/
     widget.flutterBlue.scanResults.listen((List<ScanResult> results) {
       for (ScanResult result in results) {
-        _addDeviceTolist(result.device);
+         if (result.device.id.toString() == "88:D0:39:B5:9C:D5"){
+            _addDeviceTolist(result);
+         }
+
       }
     });
     widget.flutterBlue.startScan();
   }
 
+  String wristDataParser(Map mdata){
+    String infoWrist = "<Wrist Data Info>\n";
+    
+    return infoWrist;
+  }
+
   ListView _buildListViewOfDevices() {
     List<Container> containers = new List<Container>();
-    for (BluetoothDevice device in widget.devicesList) {
+    for (ScanResult device in widget.devicesList) {
       containers.add(
         Container(
-          height: 50,
+          height: 250,
           child: Row(
             children: <Widget>[
               Expanded(
                 child: Column(
                   children: <Widget>[
-                    Text(device.name == '' ? '(unknown device)' : device.name),
-                    Text(device.id.toString()),
+                    Text(device.device.name == '' ? '(unknown device)' : device.device.name),
+                    Text(device.device.id.toString()),
+                    Text(wristDataParser(device.advertisementData.manufacturerData))
                   ],
                 ),
               ),
-              FlatButton(
+              /*FlatButton(
                 color: Colors.blue,
                 child: Text(
                   'Connect',
@@ -96,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _connectedDevice = device;
                   });
                 },
-              ),
+              ),*/
             ],
           ),
         ),
