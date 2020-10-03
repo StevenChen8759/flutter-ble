@@ -39,6 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
         widget.devicesList.add(device);
       });
     }
+    else {
+      setState(() {
+        widget.devicesList.clear();
+        widget.devicesList.add(device);
+      });
+    }
   }
 
   @override
@@ -56,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
          if (result.device.id.toString() == "88:D0:39:B5:9C:D5"){
             _addDeviceTolist(result);
          }
-
       }
     });
     widget.flutterBlue.startScan();
